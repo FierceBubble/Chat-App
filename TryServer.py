@@ -48,12 +48,12 @@ def handle_client(conn, addr, server):
                 break
             
             print(f"[{name}] {msg}")
-            conn.send("Sent\n".encode(FORMAT))
+            conn.send("Sent".encode(FORMAT))
             
         for i in sort:  # Send received messages to clients
         # Filter server and message sender. Send message except them.
             if(i != server and i != conn):
-                i.sendall(f'\n[{name}] {msg}'.encode(FORMAT))   
+                i.sendall(f'[{name}] {msg}'.encode(FORMAT))   
      
 
     conn.close()  # To close client socket connection.
