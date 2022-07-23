@@ -1,3 +1,4 @@
+from itertools import count
 import socket
 import threading
 
@@ -9,12 +10,10 @@ FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 users = []  # Store user's name
 sort = []  # Store user's socket
-room = []  # Store user's connected room
-
 
 
 def main():
-    
+
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(ADDR)
 
@@ -31,34 +30,49 @@ def handle_client(conn, addr, server):
     # conn.send('Welcome to the server'.encode(FORMAT))
     print(users)
     # print(sort)
+    display_users(conn)
+    send_everyone(server, conn, "SERVER", (f"{name} Joined!"))
 
     connected = True
     while connected:
         msg_length = conn.recv(HEADER).decode(FORMAT)
         msg_length = int(msg_length)
         msg = conn.recv(msg_length).decode(FORMAT)
-        
+
         if msg_length:
-            
+
             # Disconnect User from the server.
             if msg == DISCONNECT_MESSAGE:
-                idx=sort.index(conn)
+                idx = sort.index(conn)
                 sort.pop(idx)
                 users.pop(idx)
                 connected = False
                 print(f"[CONNECTION CLOSED] {addr} {name} disconnected")
+                send_everyone(server, conn, "SERVER",
+                              (f"{name} Disconnected!"))
                 break
-            
+
             print(f"[{name}] {msg}")
             conn.send((f"[{name}] {msg}").encode(FORMAT))
-            
-        for i in sort:  # Send received messages to clients
-        # Filter server and message sender. Send message except them.
-            if(i != server and i != conn):
-                i.sendall(f'[{name}] {msg}'.encode(FORMAT))   
-     
+
+        send_everyone(server, conn, name, msg)
 
     conn.close()  # To close client socket connection.
+
+
+def send_everyone(server, conn, name, msg):
+    for i in sort:  # Send received messages to clients
+        # Filter server and message sender. Send message except them.
+        if(i != server and i != conn):
+            i.sendall(f'[{name}] {msg}'.encode(FORMAT))
+
+
+def display_users(conn):
+    count = 1
+    conn.send('[SERVER] Users in the chat:'.encode(FORMAT))
+    for i in users:
+        conn.send((f"{count}.{users[count-1]}\n").encode(FORMAT))
+        count += 1
 
 
 def start(server):
@@ -66,11 +80,11 @@ def start(server):
     print(f"[LISTENING] Server is running on {SERVER}")
     while True:
         conn, addr = server.accept()
-        thread = threading.Thread(target=handle_client, args=(conn, addr, server))
+        thread = threading.Thread(
+            target=handle_client, args=(conn, addr, server))
         thread.start()
         print(f"[ACTIVE CONNECTIONS] {threading.active_count()-1}")
 
 
 if __name__ == '__main__':
     main()
-    
