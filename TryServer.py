@@ -9,6 +9,8 @@ FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 users = []  # Store user's name
 sort = []  # Store user's socket
+room = []  # Store user's connected room
+
 
 
 def main():
@@ -26,7 +28,7 @@ def handle_client(conn, addr, server):
     conn.send('Name'.encode(FORMAT))
     name = conn.recv(1024).decode(FORMAT)
     users.append(name)
-    #conn.send('Welcome to the server'.encode(FORMAT))
+    # conn.send('Welcome to the server'.encode(FORMAT))
     print(users)
     # print(sort)
 
@@ -48,7 +50,7 @@ def handle_client(conn, addr, server):
                 break
             
             print(f"[{name}] {msg}")
-            conn.send("Sent".encode(FORMAT))
+            conn.send((f"[{name}] {msg}").encode(FORMAT))
             
         for i in sort:  # Send received messages to clients
         # Filter server and message sender. Send message except them.
