@@ -53,7 +53,7 @@ def handle_client(conn, addr, server):
                 break
 
             print(f"[{name}] {msg}")
-            conn.send((f"[{name}] {msg}").encode(FORMAT))
+            #conn.send((f"[{name}] {msg}").encode(FORMAT))
 
         send_everyone(server, conn, name, msg)
 
@@ -68,11 +68,9 @@ def send_everyone(server, conn, name, msg):
 
 
 def display_users(conn):
-    count = 1
-    conn.send('[SERVER] Users in the chat:'.encode(FORMAT))
-    for i in users:
-        conn.send((f"{count}.{users[count-1]}\n").encode(FORMAT))
-        count += 1
+    user_dis = '\n'.join(users)
+    conn.send((f'[SERVER] Users in the chat:\n{user_dis}').encode(FORMAT))
+   
 
 
 def start(server):
