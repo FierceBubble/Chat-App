@@ -26,9 +26,9 @@ def handle_client(conn, addr, server):
     conn.send('Name'.encode(FORMAT))
     name = conn.recv(1024).decode(FORMAT)
     users.append(name)
-    # conn.send('Welcome to the server'.encode(FORMAT))
+    
     print(users)
-    # print(sort)
+    
     display_users(conn)
     send_everyone(server, conn, "SERVER", (f"{name} Joined!"))
 
