@@ -43,17 +43,18 @@ def handle_client(conn, addr, server):
 
             # Disconnect User from the server.
             if msg == DISCONNECT_MESSAGE:
+                print(f"[CONNECTION CLOSED] {addr} {name} disconnected")
+                send_everyone(server, conn, "SERVER",
+                              (f"{name} Disconnected!"))
                 idx = sort.index(conn)
                 sort.pop(idx)
                 users.pop(idx)
                 connected = False
-                print(f"[CONNECTION CLOSED] {addr} {name} disconnected")
-                send_everyone(server, conn, "SERVER",
-                              (f"{name} Disconnected!"))
+                
+                
                 break
 
             print(f"[{name}] {msg}")
-            #conn.send((f"[{name}] {msg}").encode(FORMAT))
 
         send_everyone(server, conn, name, msg)
 
